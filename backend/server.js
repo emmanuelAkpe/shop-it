@@ -6,12 +6,24 @@ app.use(express.json());
 const products = require("./routes/productRouter");
 // import database
 const { connectDatabase } = require("./config/database");
+// import error middlewares
+const errorMiddleware = require("./middlewares/errors");
+
+// Handle Uncaught exceptions
+process.on("uncaughtException", (err) => {
+  console.log(`ERROR: ${err.message}`);
+  console.log("Shutting down due to uncaught exception");
+  process.exit(1);
+});
 
 // setting up config file
 dotenv.config({ path: "backend/config/config.env" });
 
 // use routes
 app.use("/api/v1/", products);
+
+// Middleware to handle errors
+app.use(errorMiddleware);
 
 const start = async () => {
   await connectDatabase();
@@ -24,3 +36,12 @@ const start = async () => {
 };
 
 start();
+
+// Handle Unhandled Promise rejections
+process.on("unhandledRejection", (err) => {
+  console.log(`ERROR: ${err.message}`);
+  console.log("Shutting down the server due to Unhandled Promise rejection");
+  server.close(() => {
+    process.exit(1);
+  });
+});

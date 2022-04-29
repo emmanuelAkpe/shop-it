@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 app.use(express.json());
 // import all routes
 const products = require("./routes/productRouter");
+const auth = require("./routes/authRouter");
 // import database
 const { connectDatabase } = require("./config/database");
 // import error middlewares
@@ -20,7 +21,8 @@ process.on("uncaughtException", (err) => {
 dotenv.config({ path: "backend/config/config.env" });
 
 // use routes
-app.use("/api/v1/", products);
+app.use("/api/v1", products);
+app.use("/api/v1", auth);
 
 // Middleware to handle errors
 app.use(errorMiddleware);

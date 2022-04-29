@@ -1,11 +1,13 @@
 const Product = require("../models/productModel");
 
+// for making queries
+const APIFeatures = require("../utils/ApiFeatures");
+
 // import error handler
 const ErrorHandler = require("../utils/errorHandler");
 const catchAsyncErrors = require("../middlewares/catchAsyncError");
 
 // create new product => /api/v1/admin/product/new
-
 const newProduct = catchAsyncErrors(async (req, res, next) => {
   const product = await Product.create(req.body);
   res.status(201).json({
@@ -16,16 +18,28 @@ const newProduct = catchAsyncErrors(async (req, res, next) => {
 
 // get all the products
 const getProducts = catchAsyncErrors(async (req, res, next) => {
-  const products = await Product.find();
+  // pagination
+  const resPerPage = 4;
+  const productsCount = await Product.countDocuments();
+
+  const apiFeatures = new APIFeatures(Product.find(), req.query)
+    .search()
+    .filter()
+    .pagination(resPerPage);
+
+  let products = await apiFeatures.query;
+  let filteredProductsCount = products.length;
+
   res.status(200).json({
     success: true,
-    count: products.length,
+    productsCount,
+    resPerPage,
+    filteredProductsCount,
     products,
   });
 });
 
 // get a single product =>/api/product/:productId
-
 const getSingleProduct = catchAsyncErrors(async (req, res, next) => {
   const productId = req.params.productId;
   const product = await Product.findById(productId);
@@ -64,7 +78,6 @@ const updateProduct = catchAsyncErrors(async (req, res, next) => {
 });
 
 // delete product => /api/v1/admin/product/:productId
-
 const deleteProduct = catchAsyncErrors(async (req, res, next) => {
   const productId = req.params.productId;
 

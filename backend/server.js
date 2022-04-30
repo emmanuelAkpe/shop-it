@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
 app.use(express.json());
+
 // import all routes
 const products = require("./routes/productRouter");
 const auth = require("./routes/authRouter");
@@ -9,6 +10,10 @@ const auth = require("./routes/authRouter");
 const { connectDatabase } = require("./config/database");
 // import error middlewares
 const errorMiddleware = require("./middlewares/errors");
+// import the cookie-parser in order to protect the routes
+// from non-authenticated users
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
 
 // Handle Uncaught exceptions
 process.on("uncaughtException", (err) => {

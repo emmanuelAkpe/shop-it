@@ -9,6 +9,7 @@ const catchAsyncErrors = require("../middlewares/catchAsyncError");
 
 // create new product => /api/v1/admin/product/new
 const newProduct = catchAsyncErrors(async (req, res, next) => {
+  req.body.user = req.user.id; //to enable us get the person who created the product
   const product = await Product.create(req.body);
   res.status(201).json({
     success: true,

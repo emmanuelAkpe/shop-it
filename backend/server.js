@@ -6,6 +6,7 @@ app.use(express.json());
 // import all routes
 const products = require("./routes/productRouter");
 const auth = require("./routes/authRouter");
+const order = require("./routes/orderRouter");
 // import database
 const { connectDatabase } = require("./config/database");
 // import error middlewares
@@ -28,6 +29,7 @@ dotenv.config({ path: "backend/config/config.env" });
 // use routes
 app.use("/api/v1", products);
 app.use("/api/v1", auth);
+app.use("/api/v1", order);
 
 // Middleware to handle errors
 app.use(errorMiddleware);
